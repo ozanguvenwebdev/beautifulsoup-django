@@ -3,4 +3,4 @@ Dance Sport Synchronized Local Ranking Turkey from Turkish Dance Sports Federati
 
 Ps: Values are changed after 2022
 
-<a href="https://danspuanihesapla.com.tr/" target="_blank">danspuanihesapla.com.tr</a>
+<a href="https://danspuanihesapla.com.tr/" target="_blank" style="color:blue;">danspuanihesapla.com.tr</a>
