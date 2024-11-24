@@ -1,0 +1,266 @@
+{% load static %}
+{% load tags %}
+
+
+<!DOCTYPE html>
+<html lang="tr" style="height:100%;">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Dans sporu ulusal sıralama yarışması puanını anında hesapla!">
+    <meta name="keywords" content="dans, dans sporu, tdsf, yarışma, puan, hesapla, latin, standart, usy">
+    <title>Dans Sporu Puan Hesapla</title>
+    <link href="{% static 'a.png' %}" rel="icon">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/animate.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        .active-focus{
+            color:#cd0000;
+            font-weight:900;
+            font-size: 16px;
+            transition:0.6s;
+            text-shadow: 0 0 15px #ff8b8b;
+        }
+        .ajax-show-box{
+            display:block !important;
+        }
+
+        header a.nav-link {color: white !important;}
+
+
+    </style>
+    
+
+    <meta name="google-site-verification" content="JtyRdoGt0idVZ5oocwIL98rIzjqbdTDme_76KYRo6SE" />
+</head>
+<body style="min-height:100%;background-color:#ffe7e7;">
+
+    <!--PreLoader-->
+<div class="loader" style="color:#cd0000;">
+    <div class="loader-inner" style="color:#cd0000;">
+        <div class="cssload-loader" style="color:#cd0000;"></div>
+    </div>
+</div>
+<!--PreLoader Ends-->
+
+<style>
+    @media only screen and (max-width: 500px) {
+    .mobile-footer{
+        position: relative !important;
+        margin-top: 10%;
+    }
+    }
+</style>
+
+{% HeaderTag %}
+
+<!-- Contact US -->
+<section id="stayconnect1" class="bglight position-relative padding noshadow" style="padding: 6.5rem 0 0 0;background-color:#ffe7e7">
+    <div class="container whitebox">
+        <div class="widget py-5">
+            <div class="row">
+                <div class="col-md-12 text-center wow fadeIn mt-n3" data-wow-delay="300ms">
+                    <h2 class="heading bottom30 darkcolor font-light2 pt-1"><span class="font-normal">Ulusal Sıralama</span> Puanı Hesapla
+                        <span class="divider-center"></span>
+                    </h2>
+                    <div class="col-md-8 offset-md-2 bottom35">
+                        <p>Yarışma öncesi klasman atlamak için gereken puanı hesaplamaya üşeniyor musun? 
+                            Yarışma bilgilerini gir ve ne kadar puana ihtiyacın olduğunu anında öğren!</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-6 order-sm-2">
+                    <div class="contact-meta px-2 text-center text-md-left">
+                        <div class="heading-title">
+                            {% comment %} <h3 class="darkcolor font-normal mb-4">KEP = (Derece Puanı x Klasman Çarpanı) x (1 + Çift Katsayısı + Kulüp Katsayısı + Hakem Katsayısı)</h3> {% endcomment %}
+                            <span class="defaultcolor mb-3" style="font-style:italic;">"Ben sporcunun zeki, çevik ve ahlaklısını severim."</span>
+                        </div>
+                        <p class="bottom10">- K. Atatürk</p>
+                        
+                    </div>
+                    <ul class="messages" style="margin-top:3%;">
+                        <div id="scorebox" class="alert alert-danger" role="alert" style="margin-bottom:3%;text-align:center;font-size:25px;color:#cd0000;display:none;">
+                        Puan: <span id="puan-field"></span> <br> Kalan puan: <span id="rest-puan-field"></span>
+                        </div>
+                        {% if puan != None %}
+                        <div class="alert alert-danger" role="alert" style="margin-bottom:3%;text-align:center;font-size:25px;color:#cd0000;">
+                        Puan: {{puan}} <br> {% if toplam_puan != None %} Toplam puan: {{toplam_puan}}{% endif %}
+                        </div>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-md-6 col-sm-6">
+                    <div class="heading-title  wow fadeInUp" data-wow-delay="300ms">
+                        <form class="getin_form wow fadeInUp" data-wow-delay="400ms"  method="POST" id="klasmanform">
+                            {% csrf_token %}
+                            <div class="row px-2">
+                                <div class="col-md-12 col-sm-12" id="result1"></div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label for="tur" class="d-none"></label>
+                                        <select id="tur" name="tur" class="form-control" style="color:#828282;" onchange="focusFunc()" required>
+                                            <option value="" disabled selected>Yarışma Türü:</option>
+                                            <option value="etap" id="etap">Etap Yarışması</option>
+                                            <option value="sampiyona" id="sampiyona">Türkiye Şampiyonası</option>
+                                        </select>                                    
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label for="cift" class="d-none"></label>
+                                        <input class="form-control" id="cift" type="number" placeholder="Katılan çift sayısı:" required  name="cift" min="3">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label for="kulup" class="d-none"></label>
+                                        <input class="form-control" id="kulup" type="number" placeholder="Katılan kulüp sayısı:" required  name="kulup" min="1">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label for="hakem" class="d-none"></label>
+                                        <input class="form-control" id="hakem" type="number" placeholder="Hakem sayısı:" required  name="hakem" min="1">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label for="derece" class="d-none"></label>
+                                        <input class="form-control" id="derece" type="number" placeholder="Yarışma derecesi:" required  name="derece" min="1">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="form-group">
+                                        <label for="mevcut" class="d-none"></label>
+                                        <input class="form-control" id="derece" type="number" placeholder="Mevcut puan:" required  name="mevcut" min="0">
+                                    </div>
+                                </div>
+                                {% comment %} <div class="col-md-12 col-sm-12">
+                                    <button type="submit" id="submit_btn1" class="button gradient-btn w-100">Hesapla</button>
+                                </div> {% endcomment %}
+                                <div class="col-md-12 col-sm-12">
+                                    <button type="submit" id="submit_btn1" class="button gradient-btn w-100">Hesapla</button>
+                                </div>
+                                <a href="/ksy/" style="margin: auto;color: #cd0000;margin-top: 3%;font-weight: 600;text-shadow: 0px 0px 1px #fc8383;">KSY Puanı Hesapla</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="copyright mobile-footer" style="background-color:#cd0000;position: fixed;bottom:0;width:100%;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center wow fadeIn animated" data-wow-delay="300ms">
+                    <p class="m-0 py-3" style="color:white;float:left;">Copyright © 2022 | Designed by <a href="https://ozan-guven.com/" target="_blank" class="hover-default">Ozan Güven</a>. All Rights Reserved.</p>
+                    <ul class="social-icons mt-4 mb-4 mb-sm-0 wow fadeInUp" data-wow-delay="300ms" style="float:right;margin-top: 1% !important;color:white;">
+                        <li style="color:white;"> <a href="https://www.instagram.com/ozanxg/" target="_blank" style="border: 1px solid #ffffff;"><i style="color:white;" class="fab fa-instagram"></i> </a> </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Contact US ends -->
+
+
+<!--copyright-->
+
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+<!--Bootstrap Core-->
+<script src="{% static 'js/propper.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<!--to view items on reach-->
+<script src="{% static 'js/jquery.appear.js' %}"></script>
+
+<script src="{% static 'js/wow.js' %}"></script>
+<!--Revolution SLider-->
+<script src="{% static 'js/functions.js' %}"></script>
+
+
+<script>
+    function focusFunc() {
+    var b = document.getElementById("outcome_b"); /* P TAG */
+    var c = document.getElementById("outcome_c"); /* P TAG */
+    var d = document.getElementById("outcome_d"); /* P TAG */
+    var e = document.getElementById("outcome_e"); /* P TAG */
+
+
+    var x = document.getElementById("klasman").value;
+    
+    if (x == "E") {
+        b.classList.remove("active-focus");
+        c.classList.remove("active-focus");
+        d.classList.remove("active-focus");
+        e.classList.toggle("active-focus");
+    }
+    if (x == "D") {
+        b.classList.remove("active-focus");
+        c.classList.remove("active-focus");
+        d.classList.toggle("active-focus");
+        e.classList.remove("active-focus");
+
+    }
+    if (x == "C") {
+        b.classList.remove("active-focus");
+        c.classList.toggle("active-focus");
+        d.classList.remove("active-focus");
+        e.classList.remove("active-focus");
+    }
+    if (x == "B") {
+        b.classList.toggle("active-focus");
+        c.classList.remove("active-focus");
+        d.classList.remove("active-focus");
+        e.classList.remove("active-focus");
+    }
+    if (x == "A") {
+        b.classList.remove("active-focus");
+        c.classList.remove("active-focus");
+        d.classList.remove("active-focus");
+        e.classList.remove("active-focus");
+    }
+
+    }
+</script>
+
+<!--AJAX FORM GÖNDERİMİ-->
+{% comment %} <script>
+
+    var ajax_puan 
+    var ajax_kalan_puan 
+    var box = document.getElementById("scorebox"); 
+    var puan_field = document.getElementById("puan_field");
+    var rest_puan_field = document.getElementById("rest_puan_field");
+
+    $("#klasmanform").submit(function (e) {
+        e.preventDefault();
+        var serializedData = $(this).serialize()
+        $.ajax({
+            type: 'POST',
+            url: "/puanhesaplaniyor/",
+            data: serializedData,
+            success: function (response) {
+                ajax_puan = JSON.parse(response["puan"])
+                ajax_kalan_puan = JSON.parse(response["kalan_puan"])
+                puan_field.value = ajax_puan
+                rest_puan_field.value = ajax_kalan_puan
+
+                box.classList.toggle("ajax-show-box");
+
+            },
+            error: function (response) {
+            //    alert(response["responseJSON"]["error"]);
+                alert("hata oluştu")
+            }
+        })
+    })
+</script> {% endcomment %}
+
+
+</body>
+</html>
